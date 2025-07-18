@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Bee 拼字游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Spelling Bee 拼字游戏</h1>
+    <div class="top-buttons">
+        <button id="instructionsBtn">游戏说明</button>
+        <button id="shuffleBtn">乱序</button>
+        <button id="clearWordListsBtn">清空词表</button>
+    </div>
+    <div class="instructions" id="instructions">
+        <h3>游戏说明:</h3>
+        <p>1. 点击"导入词表"按钮上传包含单词的文本文件（每行一个单词）。</p>
+        <p>2. 点击"开始游戏"按钮开始拼写测试。</p>
+        <p>3. 听到单词读音后，在输入框中拼写该单词。</p>
+        <p>4. 点击"检查"按钮或按Enter键检查拼写是否正确。</p>
+        <p>5. 拼写正确的单词2秒后自动进入下一个。</p>
+        <p>6. 拼写错误的单词会加入复习词库。</p>
+        <p>7. 点击"显示单词"按钮显示正确单词。</p>
+        <p>8. 点击"下一个"按钮跳过到下一个单词。</p>
+        <p>9. 点击"重复读音"按钮再次听取单词读音。</p>
+        <p>10. 点击"乱序"按钮打乱单词列表顺序。</p>
+        <p>11. 点击"清空词表"按钮清空所有已导入的词表。</p>
+        <p>12. 如果没有声音或有其他问题，请尝试用其他浏览器打开。</p>
+    </div>
+    <div class="tabs">
+        <div class="tab active" data-tab="game">游戏</div>
+        <div class="tab" data-tab="review">复习错词</div>
+    </div>
+    <div class="tab-content active" id="gameTab">
+        <div class="game-container" id="gameContainer">
+            <div class="word-display hidden" id="wordDisplay"></div>
+            <div class="control-buttons">
+                <button id="revealBtn">显示单词</button>
+                <button id="repeatBtn">重复读音</button>
+            </div>
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="在这里输入拼写...">
+                <div class="input-buttons">
+                    <button id="checkBtn">检查</button>
+                    <button id="nextBtn">下一个</button>
+                </div>
+            </div>
+            <div id="result"></div>
+            <div class="score">
+                得分: <span id="score">0</span> / <span id="total">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content review-empty-state" id="reviewTab">
+        <div class="game-container">
+            <h3>复习错词</h3>
+            <div class="review-list" id="reviewList">
+                <p>暂无需要复习的单词</p>
+            </div>
+            <button id="reviewBtn" style="display: none;">开始复习</button>
+        </div>
+    </div>
+    <div class="file-input" id="fileInput">
+        <input type="file" id="wordFile" accept=".txt">
+        <button id="loadBtn">导入词表</button>
+        <button id="startBtn">开始游戏</button>
+    </div>
+    <div class="wordlist-selection" id="wordlistSelection">
+        <h3>选择词表</h3>
+        <select id="wordlistSelect"></select>
+    </div>
+    <div class="copyright">
+        Copyright©AW
+    </div>
+    <!-- 正确和错误音效 -->
+    <audio id="correctSound" src="https://assets.mixkit.co/active_storage/sfx/2863/2863-preview.mp3"></audio>
+    <audio id="incorrectSound" src="https://assets.mixkit.co/active_storage/sfx/946/946-preview.mp3"></audio>
+    <!-- 自定义语音库的音频元素 -->
+    <audio id="customSound"></audio>
+    <script src="script.js"></script>
+</body>
+
+</html>

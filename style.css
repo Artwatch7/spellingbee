@@ -1,0 +1,238 @@
+:root {
+    --primary-bg: #f5f7fa;
+    --secondary-bg: #eef2f7;
+    --accent-color: #4a6fa5;
+    --text-dark: #2c3e50;
+    --text-light: #ffffff;
+    --correct-green: #2ecc71;
+    --incorrect-red: #e74c3c;
+    --btn-bg: #5d87c1;
+    --btn-hover: #3a5f94;
+    --border-color: #dce1e8;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--primary-bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+h1 {
+    color: var(--accent-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: clamp(2rem, 6vw, 3rem);
+    animation: none;
+    text-align: center;
+}
+
+button {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--btn-bg);
+    color: var(--text-light);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: var(--btn-hover);
+}
+
+.game-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+}
+
+.word-display {
+    font-size: clamp(2.5rem, 10vw, 4.5rem);
+    margin: 20px 0;
+    min-height: 60px;
+    color: var(--accent-color);
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.input-area {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 12px;
+    font-size: 1.2rem;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.input-buttons, .control-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.score {
+    margin-top: 20px;
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.correct {
+    color: var(--correct-green);
+    font-weight: bold;
+}
+
+.incorrect {
+    color: var(--incorrect-red);
+    font-weight: bold;
+}
+
+.file-input {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.instructions {
+    background-color: #fffdf6;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+    display: none;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    line-height: 1.6;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.revealed {
+    visibility: visible;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 12px 20px;
+    background-color: #fff;
+    cursor: pointer;
+    border-radius: 20px 20px 0 0;
+    margin: 5px;
+    box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tab.active {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--text-dark);
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.review-list {
+    text-align: left;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 2px solid var(--border-color);
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 20px;
+}
+
+.shuffled {
+    background-color: #e74c3c;
+}
+
+.wordlist-selection {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.copyright {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.top-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.review-empty-state {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 20px;
+    }
+
+    .word-display {
+        font-size: 3rem;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    input {
+        font-size: 1rem;
+    }
+
+    .instructions {
+        font-size: 0.9rem;
+    }
+}
