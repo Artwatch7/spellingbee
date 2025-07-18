@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Bee 拼字游戏</title>
+    <style>
+        :root {
+            --primary-bg: #f5f7fa;
+            --secondary-bg: #eef2f7;
+            --accent-color: #4a6fa5;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --correct-green: #2ecc71;
+            --incorrect-red: #e74c3c;
+            --btn-bg: #5d87c1;
+            --btn-hover: #3a5f94;
+            --border-color: #dce1e8;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-size: clamp(2rem, 6vw, 3rem);
+            animation: none;
+            text-align: center;
+        }
+
+        button {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--btn-bg);
+            color: var(--text-light);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: var(--btn-hover);
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 650px;
+            margin-top: 20px;
+        }
+
+        .word-display {
+            font-size: clamp(2.5rem, 10vw, 4.5rem);
+            margin: 20px 0;
+            min-height: 60px;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .input-area {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 12px;
+            font-size: 1.2rem;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        .input-buttons, .control-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .score {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .correct {
+            color: var(--correct-green);
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: var(--incorrect-red);
+            font-weight: bold;
+        }
+
+        .file-input {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .instructions {
+            background-color: #fffdf6;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+            display: none;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            line-height: 1.6;
+        }
+
+        .hidden {
+            visibility: hidden;
+        }
+
+        .revealed {
+            visibility: visible;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 20px 20px 0 0;
+            margin: 5px;
+            box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab.active {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .review-list {
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 20px;
+        }
+
+        .shuffled {
+            background-color: #e74c3c;
+        }
+
+        .wordlist-selection {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .copyright {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* 新增样式：隐藏空的复习区域 */
+        .review-empty-state {
+            display: none;
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            .word-display {
+                font-size: 3rem;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            input {
+                font-size: 1rem;
+            }
+
+            .instructions {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Spelling Bee 拼字游戏</h1>
+    <div class="top-buttons">
+        <button id="instructionsBtn">游戏说明</button>
+        <button id="shuffleBtn">乱序</button>
+        <button id="clearWordListsBtn">清空词表</button>
+    </div>
+    <div class="instructions" id="instructions">
+        <h3>游戏说明:</h3>
+        <p>1. 点击“导入词表”按钮上传包含单词的文本文件（每行一个单词）。</p>
+        <p>2. 点击“开始游戏”按钮开始拼写测试。</p>
+        <p>3. 听到单词读音后，在输入框中拼写该单词。</p>
+        <p>4. 点击“检查”按钮或按Enter键检查拼写是否正确。</p>
+        <p>5. 拼写正确的单词2秒后自动进入下一个。</p>
+        <p>6. 拼写错误的单词会加入复习词库。</p>
+        <p>7. 点击“显示单词”按钮显示正确单词。</p>
+        <p>8. 点击“下一个”按钮跳过到下一个单词。</p>
+        <p>9. 点击“重复读音”按钮再次听取单词读音。</p>
+        <p>10. 点击“乱序”按钮打乱单词列表顺序。</p>
+        <p>11. 点击“清空词表”按钮清空所有已导入的词表。</p>
+        <p>12. 如果没有声音或有其他问题，请尝试用其他浏览器打开。</p>
+    </div>
+    <div class="tabs">
+        <div class="tab active" data-tab="game">游戏</div>
+        <div class="tab" data-tab="review">复习错词</div>
+    </div>
+    <div class="tab-content active" id="gameTab">
+        <div class="game-container" id="gameContainer">
+            <div class="word-display hidden" id="wordDisplay"></div>
+            <div class="control-buttons">
+                <button id="revealBtn">显示单词</button>
+                <button id="repeatBtn">重复读音</button>
+            </div>
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="在这里输入拼写...">
+                <div class="input-buttons">
+                    <button id="checkBtn">检查</button>
+                    <button id="nextBtn">下一个</button>
+                </div>
+            </div>
+            <div id="result"></div>
+            <div class="score">
+                得分: <span id="score">0</span> / <span id="total">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content review-empty-state" id="reviewTab">
+        <div class="game-container">
+            <h3>复习错词</h3>
+            <div class="review-list" id="reviewList">
+                <p>暂无需要复习的单词</p>
+            </div>
+            <button id="reviewBtn" style="display: none;">开始复习</button>
+        </div>
+    </div>
+    <div class="file-input" id="fileInput">
+        <input type="file" id="wordFile" accept=".txt">
+        <button id="loadBtn">导入词表</button>
+        <button id="startBtn">开始游戏</button>
+    </div>
+    <div class="wordlist-selection" id="wordlistSelection">
+        <h3>选择词表</h3>
+        <select id="wordlistSelect"></select>
+    </div>
+    <div class="copyright">
+        Copyright©AW
+    </div>
+    <!-- 正确和错误音效 -->
+    <audio id="correctSound" src="https://assets.mixkit.co/active_storage/sfx/2863/2863-preview.mp3"></audio>
+    <audio id="incorrectSound" src="https://assets.mixkit.co/active_storage/sfx/946/946-preview.mp3"></audio>
+    <!-- 自定义语音库的音频元素 -->
+    <audio id="customSound"></audio>
+    <script>
+        // 全局变量
+        let wordLists = [];
+        let reviewWords = [];
+        let currentWord = '';
+        let currentIndex = 0;
+        let score = 0;
+        let synth = window.speechSynthesis;
+        let timer = null;
+        let isShuffled = false;
+        let selectedWordListIndex = 0;
+        const correctSound = document.getElementById('correctSound');
+        const incorrectSound = document.getElementById('incorrectSound');
+        const customSound = document.getElementById('customSound'); // 获取自定义语音库的音频元素
+
+        // DOM 元素
+        const wordFile = document.getElementById('wordFile');
+        const loadBtn = document.getElementById('loadBtn');
+        const startBtn = document.getElementById('startBtn');
+        const gameContainer = document.getElementById('gameContainer');
+        const wordDisplay = document.getElementById('wordDisplay');
+        const revealBtn = document.getElementById('revealBtn');
+        const userInput = document.getElementById('userInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const repeatBtn = document.getElementById('repeatBtn');
+        const resultDisplay = document.getElementById('result');
+        const scoreDisplay = document.getElementById('score');
+        const totalDisplay = document.getElementById('total');
+        const reviewList = document.getElementById('reviewList');
+        const reviewBtn = document.getElementById('reviewBtn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const instructionsBtn = document.getElementById('instructionsBtn');
+        const instructions = document.getElementById('instructions');
+        const fileInput = document.getElementById('fileInput');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const wordlistSelect = document.getElementById('wordlistSelect');
+        const clearWordListsBtn = document.getElementById('clearWordListsBtn');
+
+        // 尝试从 localStorage 中获取保存的词表
+        const savedWordLists = localStorage.getItem('wordLists');
+        if (savedWordLists) {
+            wordLists = JSON.parse(savedWordLists);
+            updateWordlistSelect();
+        }
+
+        // 尝试从 localStorage 中获取保存的复习词库
+        const savedReviewWords = localStorage.getItem('reviewWords');
+        if (savedReviewWords) {
+            reviewWords = JSON.parse(savedReviewWords);
+            updateReviewList();
+        }
+
+        // 标签页切换
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+
+                // 如果切换到复习页且没有复习单词，显示空状态
+                if (tab.dataset.tab === 'review' && reviewWords.length === 0) {
+                    document.getElementById('reviewTab').classList.add('review-empty-state');
+                }
+            });
+        });
+
+        // 加载词表
+        loadBtn.addEventListener('click', () => {
+            const file = wordFile.files[0];
+            if (!file) {
+                alert('请先选择词表文件');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const content = e.target.result;
+                const newWordList = content.split('\n').map(word => word.trim()).filter(word => word.length > 0);
+                if (wordLists.length >= 3) {
+                    alert('最多只能保存三个词表，请删除一个后再导入。');
+                    return;
+                }
+                wordLists.push(newWordList);
+                localStorage.setItem('wordLists', JSON.stringify(wordLists));
+                updateWordlistSelect();
+                alert(`成功导入词表，共 ${newWordList.length} 个单词`);
+            };
+            reader.readAsText(file);
+        });
+
+        // 更新词表选择下拉框
+        function updateWordlistSelect() {
+            wordlistSelect.innerHTML = '';
+            wordLists.forEach((_, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `词表 ${index + 1}`;
+                wordlistSelect.appendChild(option);
+            });
+        }
+
+        // 选择词表
+        wordlistSelect.addEventListener('change', () => {
+            selectedWordListIndex = parseInt(wordlistSelect.value);
+        });
+
+        // 开始游戏
+        startBtn.addEventListener('click', () => {
+            if (wordLists.length === 0) {
+                alert('请先导入词表');
+                return;
+            }
+            const selectedWordList = wordLists[selectedWordListIndex];
+            currentIndex = 0;
+            score = 0;
+            scoreDisplay.textContent = score;
+            totalDisplay.textContent = 0;
+            showNextWord(selectedWordList);
+            fileInput.style.display = 'none';
+        });
+
+        // 开始复习
+        reviewBtn.addEventListener('click', () => {
+            if (reviewWords.length === 0) {
+                alert('复习词库中没有单词');
+                return;
+            }
+            const selectedWordList = reviewWords;
+            reviewWords = [];
+            updateReviewList();
+            currentIndex = 0;
+            score = 0;
+            scoreDisplay.textContent = score;
+            totalDisplay.textContent = 0;
+            showNextWord(selectedWordList);
+            document.querySelector('.tab[data-tab="game"]').click();
+            // 复习开始后清空复习错词的 localStorage
+            localStorage.removeItem('reviewWords');
+
+            // 隐藏空状态提示
+            document.getElementById('reviewTab').classList.remove('review-empty-state');
+        });
+
+        // 显示下一个单词
+        function showNextWord(wordList) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            if (currentIndex >= wordList.length) {
+                wordDisplay.textContent = '游戏结束!';
+                wordDisplay.classList.remove('hidden');
+                userInput.style.display = 'none';
+                checkBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                revealBtn.style.display = 'none';
+                repeatBtn.style.display = 'none';
+                resultDisplay.textContent = `最终得分: ${score} / ${currentIndex}`;
+                if (reviewWords.length > 0) {
+                    reviewBtn.style.display = 'inline-block';
+                }
+                return;
+            }
+            currentWord = wordList[currentIndex];
+            wordDisplay.textContent = currentWord;
+            wordDisplay.classList.add('hidden');
+            userInput.value = '';
+            resultDisplay.textContent = '';
+            userInput.focus();
+            // 朗读单词
+            speakWord(currentWord);
+        }
+
+        // 朗读单词 - 指向有道词典发音链接
+        function speakWord(word) {
+            const audioUrl = `https://dict.youdao.com/dictvoice?type=0&audio=${word}`;
+            customSound.src = audioUrl;
+            customSound.play().catch(error => {
+                console.error(`播放单词 "${word}" 的音频失败:`, error);
+                alert(`抱歉，无法播放单词 "${word}" 的发音。`);
+            });
+        }
+
+        // 检查拼写
+        function checkSpelling() {
+            const userAnswer = userInput.value.trim().toLowerCase();
+            const correctAnswer = currentWord.toLowerCase();
+            wordDisplay.classList.remove('hidden');
+            if (userAnswer === correctAnswer) {
+                resultDisplay.textContent = '正确!';
+                resultDisplay.className = 'correct';
+                score++;
+                correctSound.play();
+            } else {
+                resultDisplay.textContent = `错误! 正确拼写是: ${currentWord}`;
+                resultDisplay.className = 'incorrect';
+                incorrectSound.play();
+                // 添加到复习错词
+                if (!reviewWords.includes(currentWord)) {
+                    reviewWords.push(currentWord);
+                    updateReviewList();
+                    // 更新 localStorage 中的复习错词
+                    localStorage.setItem('reviewWords', JSON.stringify(reviewWords));
+                }
+            }
+            scoreDisplay.textContent = score;
+            totalDisplay.textContent = currentIndex + 1;
+            // 设置答案单词颜色为绿色
+            wordDisplay.style.color = 'green';
+            // 2 秒后自动下一个
+            timer = setTimeout(() => {
+                // 恢复默认颜色
+                wordDisplay.style.color = '#333';
+                currentIndex++;
+                const selectedWordList = wordLists[selectedWordListIndex];
+                showNextWord(selectedWordList);
+            }, 2000);
+        }
+
+        // 更新复习错词显示
+        function updateReviewList() {
+            if (reviewWords.length === 0) {
+                reviewList.innerHTML = '<p>暂无需要复习的单词</p>';
+                reviewBtn.style.display = 'none';
+            } else {
+                reviewList.innerHTML = reviewWords.map(word => `<div>${word}</div>`).join('');
+                reviewBtn.style.display = 'inline-block';
+            }
+        }
+
+        // 显示单词
+        revealBtn.addEventListener('click', () => {
+            wordDisplay.classList.remove('hidden');
+            // 设置答案单词颜色为绿色
+            wordDisplay.style.color = 'green';
+        });
+
+        // 事件监听
+        checkBtn.addEventListener('click', checkSpelling);
+        nextBtn.addEventListener('click', () => {
+            // 恢复默认颜色
+            wordDisplay.style.color = '#333';
+            currentIndex++;
+            const selectedWordList = wordLists[selectedWordListIndex];
+            showNextWord(selectedWordList);
+        });
+        repeatBtn.addEventListener('click', () => speakWord(currentWord));
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkSpelling();
+            }
+        });
+
+        // 显示游戏说明
+        instructionsBtn.addEventListener('click', () => {
+            if (instructions.style.display === 'none') {
+                instructions.style.display = 'block';
+            } else {
+                instructions.style.display = 'none';
+            }
+        });
+
+        // 乱序单词
+        shuffleBtn.addEventListener('click', () => {
+            const selectedWordList = wordLists[selectedWordListIndex];
+            if (selectedWordList.length > 0) {
+                wordLists[selectedWordListIndex] = shuffleArray(selectedWordList);
+                // 保存乱序后的词表
+                localStorage.setItem('wordLists', JSON.stringify(wordLists));
+                currentIndex = 0;
+                score = 0;
+                scoreDisplay.textContent = score;
+                totalDisplay.textContent = 0;
+                showNextWord(selectedWordList);
+                isShuffled = !isShuffled;
+                if (isShuffled) {
+                    shuffleBtn.classList.add('shuffled');
+                } else {
+                    shuffleBtn.classList.remove('shuffled');
+                }
+            } else {
+                alert('请先导入词表');
+            }
+        });
+
+        // 洗牌算法
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 快捷键唤出导入词表功能
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'l') {
+                if (fileInput.style.display === 'none') {
+                    fileInput.style.display = 'block';
+                } else {
+                    fileInput.style.display = 'none';
+                }
+            }
+        });
+
+        // 清空词表
+        clearWordListsBtn.addEventListener('click', () => {
+            if (confirm('确定要清空所有词表吗？')) {
+                wordLists = [];
+                localStorage.removeItem('wordLists');
+                updateWordlistSelect();
+                alert('词表已清空');
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+
